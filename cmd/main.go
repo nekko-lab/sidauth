@@ -36,6 +36,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	nekkolabdevv1 "github.com/nekko-lab/sidauth/api/v1"
+	"github.com/nekko-lab/sidauth/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -47,19 +50,27 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
+	utilruntime.Must(nekkolabdevv1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 
 // nolint:gocyclo
 func main() {
-	var metricsAddr string
-	var metricsCertPath, metricsCertName, metricsCertKey string
-	var webhookCertPath, webhookCertName, webhookCertKey string
-	var enableLeaderElection bool
-	var probeAddr string
-	var secureMetrics bool
-	var enableHTTP2 bool
-	var tlsOpts []func(*tls.Config)
+	var (
+		metricsAddr          string
+		metricsCertPath      string
+		metricsCertName      string
+		metricsCertKey       string
+		webhookCertPath      string
+		webhookCertName      string
+		webhookCertKey       string
+		enableLeaderElection bool
+		probeAddr            string
+		secureMetrics        bool
+		enableHTTP2          bool
+		tlsOpts              []func(*tls.Config)
+	)
+
 	flag.StringVar(&metricsAddr, "metrics-bind-address", "0", "The address the metrics endpoint binds to. "+
 		"Use :8443 for HTTPS or :8080 for HTTP, or leave as 0 to disable the metrics service.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
@@ -198,6 +209,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err = (&controller.AuthServiceReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "AuthService")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	if metricsCertWatcher != nil {

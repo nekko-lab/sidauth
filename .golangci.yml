@@ -1,47 +1,54 @@
+linters:
+  enable-all: true
+  disable:
+    - tenv # deprecated
+    - depguard
+    - dogsled
+    - gci
+    - godot
+    - nolintlint
+
 run:
   timeout: 5m
   allow-parallel-runners: true
 
 issues:
-  # don't skip warning about doc comments
-  # don't exclude the default set of lint
   exclude-use-default: false
-  # restore some of the defaults
-  # (fill in the rest as needed)
   exclude-rules:
-    - path: "api/*"
+    - path: _test\.go
       linters:
-        - lll
-    - path: "internal/*"
+        - containedctx
+        - funlen
+        - gosec
+        - wrapcheck
+    - path: test/
       linters:
-        - dupl
-        - lll
-linters:
-  disable-all: true
-  enable:
-    - dupl
-    - errcheck
-    - copyloopvar
-    - ginkgolinter
-    - goconst
-    - gocyclo
-    - gofmt
-    - goimports
-    - gosimple
-    - govet
-    - ineffassign
-    - lll
-    - misspell
-    - nakedret
-    - prealloc
-    - revive
-    - staticcheck
-    - typecheck
-    - unconvert
-    - unparam
-    - unused
+        - containedctx
+        - funlen
+        - gosec
+        - wrapcheck
 
 linters-settings:
+  cyclop:
+    max-complexity: 15
+  exhaustruct:
+    include:
+      - 'github\.com/nekko-lab/sidauth.+'
+  lll:
+    line-length: 150
   revive:
     rules:
-      - name: comment-spacings
+      - name: package-comments
+        disabled: true
+  stylecheck:
+    checks:
+      - all
+      - -ST1000
+  varnamelen:
+    ignore-names:
+      - tt
+      - tx
+      - id
+      - db
+      - to
+      - i
