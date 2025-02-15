@@ -7,4 +7,13 @@ layout:
 - go.kubebuilder.io/v4
 projectName: sidauth
 repo: github.com/nekko-lab/sidauth
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: nekko-lab.dev
+  kind: AuthService
+  path: github.com/nekko-lab/sidauth/api/v1
+  version: v1
 version: "3"

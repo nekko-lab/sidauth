@@ -1,0 +1,9 @@
+apiVersion: nekko-lab.dev/v1
+kind: AuthService
+metadata:
+  labels:
+    app.kubernetes.io/name: sidauth
+    app.kubernetes.io/managed-by: kustomize
+  name: authservice-sample
+spec:
+  # TODO(user): Add fields here
